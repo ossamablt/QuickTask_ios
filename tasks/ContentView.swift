@@ -63,6 +63,10 @@ class TodoViewModel: ObservableObject {
         todos[index].title = title
     }
     
+    func deleteTodo(_ todo: Todo) {
+        todos.removeAll(where: { $0.id == todo.id })
+    }
+    
     func delete(at offsets: IndexSet) {
         todos.remove(atOffsets: offsets)
     }
@@ -172,6 +176,7 @@ struct EditTodoView: View {
     let todo: Todo
     @ObservedObject var viewModel: TodoViewModel
     @State private var title: String
+    @Environment(\.dismiss) private var dismiss
     
     init(todo: Todo, viewModel: TodoViewModel) {
         self.todo = todo
@@ -181,10 +186,25 @@ struct EditTodoView: View {
     
     var body: some View {
         Form {
-            TextField("Title", text: $title)
+            Section {
+                TextField("Title", text: $title)
+                
+                Button("Save") {
+                    viewModel.update(todo, title: title)
+                }
+            }
             
-            Button("Save") {
-                viewModel.update(todo, title: title)
+            Section {
+                Button(role: .destructive) {
+                    viewModel.deleteTodo(todo)
+                    dismiss()
+                } label: {
+                    HStack {
+                        Spacer()
+                        Text("Delete Task")
+                        Spacer()
+                    }
+                }
             }
         }
         .navigationTitle("Edit Task")
