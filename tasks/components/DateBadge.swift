@@ -23,5 +23,7 @@ struct DateBadge: View {
         .padding(.vertical, 4)
         .background(isOverdue ? Color.red : Color(.systemGray5))
         .cornerRadius(6)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Due \(date.relativeFormatted)\(isOverdue ? ", overdue" : "")")
     }
 }

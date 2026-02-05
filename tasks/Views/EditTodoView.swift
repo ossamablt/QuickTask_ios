@@ -84,8 +84,9 @@ struct EditTodoView: View {
                     )
                     dismiss()
                 }
+                .accessibilityHint("Save modifications to this task")
             }
-            
+
             Section {
                 Button(role: .destructive) {
                     viewModel.deleteTodo(todo)
@@ -97,6 +98,8 @@ struct EditTodoView: View {
                         Spacer()
                     }
                 }
+                .accessibilityLabel("Delete task")
+                .accessibilityHint("Permanently remove this task")
             }
         }
         .navigationTitle("Edit Task")

@@ -86,5 +86,36 @@ struct TodoRow: View {
                     isPressed = false
                 }
         )
+        // Accessibility
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(accessibilityLabel)
+        .accessibilityHint("Double tap to mark as \(todo.isCompleted ? "incomplete" : "complete"). Swipe right to edit or left to delete.")
+        .accessibilityAddTraits(todo.isCompleted ? .isSelected : [])
+    }
+
+    // MARK: - Accessibility
+
+    private var accessibilityLabel: String {
+        var label = todo.title
+
+        if todo.isCompleted {
+            label += ", completed"
+        }
+
+        label += ", \(todo.priority.rawValue) priority"
+        label += ", \(todo.category.rawValue) category"
+
+        if let dueDate = todo.dueDate {
+            label += ", due \(dueDate.relativeFormatted)"
+            if todo.isOverdue && !todo.isCompleted {
+                label += ", overdue"
+            }
+        }
+
+        if !todo.notes.isEmpty {
+            label += ", note: \(todo.notes)"
+        }
+
+        return label
     }
 }

@@ -22,5 +22,7 @@ struct PriorityBadge: View {
         .padding(.vertical, 4)
         .background(Color.priorityColor(for: priority))
         .cornerRadius(6)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("\(priority.rawValue.capitalized) priority")
     }
 }

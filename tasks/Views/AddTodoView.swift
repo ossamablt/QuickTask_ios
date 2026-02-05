@@ -53,13 +53,14 @@ struct AddTodoView: View {
                     Button("Cancel") {
                         dismiss()
                     }
+                    .accessibilityHint("Discard changes and close")
                 }
-                
+
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Add") {
                         let trimmed = title.trimmingCharacters(in: .whitespaces)
                         guard !trimmed.isEmpty else { return }
-                        
+
                         viewModel.addTodo(
                             title: trimmed,
                             dueDate: hasDueDate ? dueDate : nil,
@@ -70,6 +71,7 @@ struct AddTodoView: View {
                         dismiss()
                     }
                     .disabled(title.trimmingCharacters(in: .whitespaces).isEmpty)
+                    .accessibilityHint("Create task with current details")
                 }
             }
         }

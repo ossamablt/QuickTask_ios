@@ -23,5 +23,8 @@ struct CategoryChip: View {
             .foregroundColor(isSelected ? .white : .primary)
             .cornerRadius(16)
         }
+        .accessibilityLabel("\(title) category filter")
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
+        .accessibilityHint("Double tap to filter tasks by \(title.lowercased())")
     }
 }

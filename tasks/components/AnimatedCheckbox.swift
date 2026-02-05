@@ -38,5 +38,8 @@ struct AnimatedCheckbox: View {
             .animation(AnimationConstants.checkboxToggle, value: isCompleted)
         }
         .buttonStyle(.plain)
+        .accessibilityLabel(isCompleted ? "Completed" : "Not completed")
+        .accessibilityHint("Double tap to mark as \(isCompleted ? "incomplete" : "complete")")
+        .accessibilityAddTraits(.isButton)
     }
 }

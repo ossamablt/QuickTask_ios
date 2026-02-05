@@ -237,6 +237,8 @@ struct TodoListView: View {
                         } label: {
                             Image(systemName: "chart.bar.fill")
                         }
+                        .accessibilityLabel("View statistics")
+                        .accessibilityHint("Shows task completion statistics and breakdowns")
 
                         if !filteredTodos.isEmpty {
                             Button {
@@ -248,6 +250,8 @@ struct TodoListView: View {
                                 Text(editMode == .active ? "Done" : "Reorder")
                                     .font(.body)
                             }
+                            .accessibilityLabel(editMode == .active ? "Done reordering" : "Reorder tasks")
+                            .accessibilityHint(editMode == .active ? "Exit reorder mode" : "Enter reorder mode to drag and drop tasks")
                         }
                     }
                 }
@@ -260,6 +264,8 @@ struct TodoListView: View {
                         Image(systemName: "plus.circle.fill")
                             .font(.title3)
                     }
+                    .accessibilityLabel("Add new task")
+                    .accessibilityHint("Opens a form to create a new task")
                 }
             }
             .sheet(isPresented: $showingAddSheet) {
