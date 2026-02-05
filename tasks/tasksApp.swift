@@ -45,7 +45,7 @@ struct tasksApp: App {
 
     var body: some Scene {
         WindowGroup {
-            TodoListView()
+            MainNavigationView()
         }
         .modelContainer(modelContainer)
     }
