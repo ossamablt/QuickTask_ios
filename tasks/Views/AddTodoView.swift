@@ -2,7 +2,7 @@ import SwiftUI
 
 // MARK: - Add Todo View
 struct AddTodoView: View {
-    @ObservedObject var viewModel: TodoViewModel
+    let viewModel: TodoListViewModel
     @Environment(\.dismiss) private var dismiss
     
     @State private var title = ""
