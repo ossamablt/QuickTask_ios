@@ -8,66 +8,70 @@ struct TodoRow: View {
     @State private var isPressed = false
 
     var body: some View {
-        HStack(alignment: .top, spacing: 12) {
+        HStack(alignment: .top, spacing: 14) {
             // Animated Checkbox
-            Button(action: onToggle) {
-                Image(systemName: todo.isCompleted ? "checkmark.circle.fill" : "circle")
-                    .foregroundColor(todo.isCompleted ? .green : .gray)
-                    .font(.title3)
-                    .scaleEffect(todo.isCompleted ? AnimationConstants.completedScale : 1.0)
-                    .animation(AnimationConstants.checkboxToggle, value: todo.isCompleted)
-            }
-            .buttonStyle(.plain)
-            
-            VStack(alignment: .leading, spacing: 4) {
-                HStack {
-                    Text(todo.title)
-                        .strikethrough(todo.isCompleted)
-                        .foregroundColor(todo.isCompleted ? .secondary : .primary)
-                        .animation(AnimationConstants.spring, value: todo.isCompleted)
-                    
-                    Spacer()
-                    
-                    Image(systemName: todo.priority.icon)
-                        .foregroundColor(todo.priority.color)
-                        .font(.caption)
-                }
-                
+            AnimatedCheckbox(isCompleted: todo.isCompleted, action: onToggle)
+                .padding(.top, 2)
+
+            VStack(alignment: .leading, spacing: 8) {
+                // Title
+                Text(todo.title)
+                    .font(.body)
+                    .fontWeight(.medium)
+                    .strikethrough(todo.isCompleted)
+                    .foregroundColor(todo.isCompleted ? ColorTheme.secondaryText : ColorTheme.primaryText)
+                    .animation(AnimationConstants.spring, value: todo.isCompleted)
+
+                // Badges
                 HStack(spacing: 8) {
-                    Label(todo.category.rawValue, systemImage: todo.category.icon)
-                        .font(.caption2)
-                        .foregroundColor(todo.category.color)
-                    
-                    if let dueDate = todo.dueDate {
-                        HStack(spacing: 2) {
-                            Image(systemName: "calendar")
-                            Text(dueDate, style: .date)
-                        }
-                        .font(.caption2)
-                        .foregroundColor(todo.isOverdue ? .red : .secondary)
+                    // Priority Badge
+                    PriorityBadge(priority: todo.priority)
+
+                    // Category Badge
+                    HStack(spacing: 4) {
+                        Image(systemName: todo.category.icon)
+                        Text(todo.category.rawValue)
                     }
-                    
-                    if todo.isOverdue {
-                        Text("OVERDUE")
-                            .font(.caption2)
-                            .fontWeight(.bold)
-                            .foregroundColor(.white)
-                            .padding(.horizontal, 6)
-                            .padding(.vertical, 2)
-                            .background(Color.red)
-                            .cornerRadius(4)
+                    .font(.caption)
+                    .foregroundColor(Color.categoryColor(for: todo.category))
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(Color.categoryColor(for: todo.category).opacity(0.15))
+                    .cornerRadius(6)
+
+                    // Due Date Badge
+                    if let dueDate = todo.dueDate {
+                        DateBadge(date: dueDate, isOverdue: todo.isOverdue && !todo.isCompleted)
                     }
                 }
-                
+
+                // Notes Preview
                 if !todo.notes.isEmpty {
                     Text(todo.notes)
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(ColorTheme.tertiaryText)
                         .lineLimit(2)
+                        .padding(.top, 2)
                 }
             }
+
+            Spacer()
         }
-        .padding(.vertical, 4)
+        .padding(12)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(ColorTheme.cardBackground)
+                .shadow(
+                    color: ColorTheme.cardShadow,
+                    radius: isPressed ? 2 : 4,
+                    x: 0,
+                    y: isPressed ? 1 : 2
+                )
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(Color.gray.opacity(0.1), lineWidth: 1)
+        )
         .scaleEffect(isPressed ? AnimationConstants.pressedScale : 1.0)
         .animation(AnimationConstants.cardPress, value: isPressed)
         .simultaneousGesture(

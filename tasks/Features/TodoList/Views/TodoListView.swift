@@ -166,13 +166,21 @@ struct TodoListView: View {
                     } else {
                         List {
                             ForEach(filteredTodos) { todo in
-                                NavigationLink {
-                                    EditTodoView(todo: todo, viewModel: viewModel)
-                                } label: {
+                                ZStack {
+                                    NavigationLink {
+                                        EditTodoView(todo: todo, viewModel: viewModel)
+                                    } label: {
+                                        EmptyView()
+                                    }
+                                    .opacity(0)
+
                                     TodoRow(todo: todo) {
                                         viewModel.toggleCompletion(todo)
                                     }
                                 }
+                                .listRowInsets(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
+                                .listRowSeparator(.hidden)
+                                .listRowBackground(Color.clear)
                                 .transition(
                                     .asymmetric(
                                         insertion: .move(edge: .top).combined(with: .opacity),
@@ -189,6 +197,8 @@ struct TodoListView: View {
                             }
                         }
                         .listStyle(.plain)
+                        .scrollContentBackground(.hidden)
+                        .background(ColorTheme.secondaryBackground)
                         .animation(AnimationConstants.listInsert, value: filteredTodos.count)
                     }
                 }
