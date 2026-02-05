@@ -15,6 +15,7 @@ struct TodoListView: View {
     @State private var viewModel: TodoListViewModel?
     @State private var showingAddSheet = false
     @State private var showingStatsSheet = false
+    @State private var editMode: EditMode = .inactive
 
     // MARK: - Computed Properties
 
@@ -181,6 +182,25 @@ struct TodoListView: View {
                                 .listRowInsets(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
                                 .listRowSeparator(.hidden)
                                 .listRowBackground(Color.clear)
+                                .swipeActions(edge: .leading, allowsFullSwipe: true) {
+                                    Button {
+                                        HapticService.shared.buttonPressed()
+                                        // Navigate is handled by the NavigationLink
+                                    } label: {
+                                        Label("Edit", systemImage: "pencil")
+                                    }
+                                    .tint(.blue)
+                                }
+                                .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                                    Button(role: .destructive) {
+                                        HapticService.shared.taskDeleted()
+                                        withAnimation(AnimationConstants.listDelete) {
+                                            viewModel.deleteTodo(todo)
+                                        }
+                                    } label: {
+                                        Label("Delete", systemImage: "trash")
+                                    }
+                                }
                                 .transition(
                                     .asymmetric(
                                         insertion: .move(edge: .top).combined(with: .opacity),
@@ -195,22 +215,40 @@ struct TodoListView: View {
                                     }
                                 }
                             }
+                            .onMove { source, destination in
+                                viewModel.moveTodos(from: source, to: destination, in: filteredTodos)
+                            }
                         }
                         .listStyle(.plain)
                         .scrollContentBackground(.hidden)
                         .background(ColorTheme.secondaryBackground)
                         .animation(AnimationConstants.listInsert, value: filteredTodos.count)
+                        .environment(\.editMode, $editMode)
                     }
                 }
             }
             .navigationTitle("My Tasks")
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button {
-                        HapticService.shared.buttonPressed()
-                        showingStatsSheet = true
-                    } label: {
-                        Image(systemName: "chart.bar.fill")
+                    HStack(spacing: 12) {
+                        Button {
+                            HapticService.shared.buttonPressed()
+                            showingStatsSheet = true
+                        } label: {
+                            Image(systemName: "chart.bar.fill")
+                        }
+
+                        if !filteredTodos.isEmpty {
+                            Button {
+                                HapticService.shared.buttonPressed()
+                                withAnimation {
+                                    editMode = editMode == .active ? .inactive : .active
+                                }
+                            } label: {
+                                Text(editMode == .active ? "Done" : "Reorder")
+                                    .font(.body)
+                            }
+                        }
                     }
                 }
 
