@@ -99,15 +99,17 @@ class TodoViewModel: ObservableObject {
                        dueDate: dueDate,
                        priority: priority,
                        category: category,
-                       notes: notes)
+                       notes: notes,
+                       sortOrder: todos.count)
         todos.append(todo)
     }
-    
+
     func toggle(_ todo: Todo) {
         guard let index = todos.firstIndex(where: { $0.id == todo.id }) else { return }
         todos[index].isCompleted.toggle()
+        todos[index].lastModified = Date()
     }
-    
+
     func update(_ todo: Todo,
                 title: String,
                 dueDate: Date?,
@@ -120,6 +122,7 @@ class TodoViewModel: ObservableObject {
         todos[index].priority = priority
         todos[index].category = category
         todos[index].notes = notes
+        todos[index].lastModified = Date()
     }
     
     func deleteTodo(_ todo: Todo) {
@@ -127,7 +130,10 @@ class TodoViewModel: ObservableObject {
     }
     
     func delete(at offsets: IndexSet) {
-        todos.remove(atOffsets: offsets)
+        // Remove in descending order to keep remaining indices valid
+        for index in offsets.sorted(by: >) {
+            todos.remove(at: index)
+        }
     }
     
     func clearCompleted() {
@@ -135,18 +141,15 @@ class TodoViewModel: ObservableObject {
     }
     
     // MARK: - Persistence
+    // NOTE: These methods are deprecated and will be removed in Stage 3
+    // SwiftData handles persistence automatically via ModelContext
     private func saveTodos() {
-        if let data = try? JSONEncoder().encode(todos) {
-            UserDefaults.standard.set(data, forKey: storageKey)
-        }
+        // TODO: Remove in Stage 3 - SwiftData handles persistence
+        print("Warning: saveTodos() called but should use SwiftData ModelContext")
     }
-    
+
     private func loadTodos() {
-        guard
-            let data = UserDefaults.standard.data(forKey: storageKey),
-            let savedTodos = try? JSONDecoder().decode([Todo].self, from: data)
-        else { return }
-        
-        todos = savedTodos
+        // TODO: Remove in Stage 3 - SwiftData handles loading via @Query
+        print("Warning: loadTodos() called but should use SwiftData @Query")
     }
 }
