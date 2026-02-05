@@ -173,14 +173,23 @@ struct TodoListView: View {
                                         viewModel.toggleCompletion(todo)
                                     }
                                 }
+                                .transition(
+                                    .asymmetric(
+                                        insertion: .move(edge: .top).combined(with: .opacity),
+                                        removal: .move(edge: .trailing).combined(with: .opacity).combined(with: .scale(scale: AnimationConstants.deletedScale))
+                                    )
+                                )
                             }
                             .onDelete { indexSet in
-                                for index in indexSet {
-                                    viewModel.deleteTodo(filteredTodos[index])
+                                withAnimation(AnimationConstants.listDelete) {
+                                    for index in indexSet {
+                                        viewModel.deleteTodo(filteredTodos[index])
+                                    }
                                 }
                             }
                         }
                         .listStyle(.plain)
+                        .animation(AnimationConstants.listInsert, value: filteredTodos.count)
                     }
                 }
             }
@@ -188,6 +197,7 @@ struct TodoListView: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button {
+                        HapticService.shared.buttonPressed()
                         showingStatsSheet = true
                     } label: {
                         Image(systemName: "chart.bar.fill")
@@ -196,6 +206,7 @@ struct TodoListView: View {
 
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
+                        HapticService.shared.buttonPressed()
                         showingAddSheet = true
                     } label: {
                         Image(systemName: "plus.circle.fill")

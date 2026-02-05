@@ -4,13 +4,18 @@ import SwiftUI
 struct TodoRow: View {
     let todo: Todo
     let onToggle: () -> Void
-    
+
+    @State private var isPressed = false
+
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
+            // Animated Checkbox
             Button(action: onToggle) {
                 Image(systemName: todo.isCompleted ? "checkmark.circle.fill" : "circle")
                     .foregroundColor(todo.isCompleted ? .green : .gray)
                     .font(.title3)
+                    .scaleEffect(todo.isCompleted ? AnimationConstants.completedScale : 1.0)
+                    .animation(AnimationConstants.checkboxToggle, value: todo.isCompleted)
             }
             .buttonStyle(.plain)
             
@@ -19,6 +24,7 @@ struct TodoRow: View {
                     Text(todo.title)
                         .strikethrough(todo.isCompleted)
                         .foregroundColor(todo.isCompleted ? .secondary : .primary)
+                        .animation(AnimationConstants.spring, value: todo.isCompleted)
                     
                     Spacer()
                     
@@ -62,5 +68,19 @@ struct TodoRow: View {
             }
         }
         .padding(.vertical, 4)
+        .scaleEffect(isPressed ? AnimationConstants.pressedScale : 1.0)
+        .animation(AnimationConstants.cardPress, value: isPressed)
+        .simultaneousGesture(
+            DragGesture(minimumDistance: 0)
+                .onChanged { _ in
+                    if !isPressed {
+                        isPressed = true
+                        HapticService.shared.buttonPressed(intensity: 0.5)
+                    }
+                }
+                .onEnded { _ in
+                    isPressed = false
+                }
+        )
     }
 }
